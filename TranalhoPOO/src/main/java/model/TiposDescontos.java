@@ -1,0 +1,5 @@
+package model;
+
+public enum TiposDescontos {
+	ALIMENTACAO, TRANSPORTE, RESIDENCIA, EDUCACAO, ENTRETENIMENTO, OUTROS
+}
