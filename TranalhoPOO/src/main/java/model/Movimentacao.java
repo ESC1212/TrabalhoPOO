@@ -1,53 +1,50 @@
 package model;
 
-import java.io.PrintStream;
-import java.sql.Date;
 import java.time.LocalDate;
+import java.util.Objects;
 
-import javax.xml.crypto.Data;
-
-public class Movimentacao {
+public abstract class Movimentacao {
 	
-	private float saldoAtual;
 	private float valor;
-	private LocalDate dataCadastro;
 	private LocalDate dataMovimentacao;
 	
-	public Movimentacao (float saldoAtual, float valor, LocalDate dataMovimentacao) {
-		setSaldoAtual(saldoAtual);
+	public Movimentacao ( float valor, LocalDate dataMovimentacao) {
 		setValor(valor);
-		setDataCadastro(LocalDate.now());
 		setDataMovimentacao(dataMovimentacao);
 	}
-	
-	public float getSaldoAtual() {
-		return saldoAtual;
-	}
-	public void setSaldoAtual(float saldoAtual) {
-		this.saldoAtual = saldoAtual;
-	}
+
 	public float getValor() {
 		return valor;
 	}
 	public void setValor(float valor) {
-		if (valor <= 0)
+		if (valor < 0)
 			throw new IllegalArgumentException("Valor inválido");
 		this.valor = valor;
-	}
-	public LocalDate getDataCadastro() {
-		return dataCadastro;
-	}
-	public void setDataCadastro(LocalDate dataCadastro) {
-		if (dataCadastro == null)
-			throw new IllegalArgumentException("Data Cadastro invalida");
-		this.dataCadastro = dataCadastro;
 	}
 	public LocalDate getDataMovimentacao() {
 		return dataMovimentacao;
 	}
 	public void setDataMovimentacao(LocalDate dataMovimentacao) {
-		if (dataMovimentacao == null)
-			throw new IllegalArgumentException("Data Cadastro invalida");
 		this.dataMovimentacao = dataMovimentacao;
+	}
+
+	public abstract Object getTipo();
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(dataMovimentacao, valor);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Movimentacao other = (Movimentacao) obj;
+		return Objects.equals(dataMovimentacao, other.dataMovimentacao)
+				&& Float.floatToIntBits(valor) == Float.floatToIntBits(other.valor);
 	}
 }

@@ -1,16 +1,18 @@
 package model;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 public class Desconto extends Movimentacao{
 
 	private TiposDescontos Tipo;
 	
-	public Desconto (float saldoAtual, float valor, LocalDate dataMovimentacao, TiposDescontos Tipo) {
-		super(saldoAtual, valor, dataMovimentacao);
+	public Desconto (float valor, LocalDate dataMovimentacao, TiposDescontos Tipo) {
+		super(valor, dataMovimentacao);
 		setTipo(Tipo);
 	}
 
+	@Override
 	public TiposDescontos getTipo() {
 		return Tipo;
 	}
@@ -19,6 +21,28 @@ public class Desconto extends Movimentacao{
 		if (tipo == null)
 			throw new IllegalArgumentException("Tipo inválido!");
 		Tipo = tipo;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + Objects.hash(Tipo);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Desconto other = (Desconto) obj;
+		return Tipo == other.Tipo;
 	}
 
 }

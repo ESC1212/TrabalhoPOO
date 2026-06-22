@@ -10,7 +10,12 @@ public class Conta {
 	private float saldo;
 	private ArrayList<Desconto> descontos = new ArrayList<Desconto>();
 	private ArrayList<Receita> receitas = new ArrayList<Receita>();
+	private ArrayList<Movimentacao> movimentacoes = new ArrayList();
 	
+	public void setMovimentacoes(ArrayList<Movimentacao> movimentacoes) {
+		this.movimentacoes = movimentacoes;
+	}
+
 	public Conta(String nomeTitutal, int numeroConta, float saldo) {
 		setNomeTitulas(nomeTitutal);
 		setNumeroConta(numeroConta);
@@ -49,18 +54,32 @@ public class Conta {
 	public void novaReceita(float valor, LocalDate dataMovimentacao, TipoReceita Tipo) {
 		if (!dataMovimentacao.isAfter(LocalDate.now()))
 			setSaldo(saldo + valor);
-		Receita r = new Receita(getSaldo(), valor, dataMovimentacao, Tipo);	
+		Receita r = new Receita(valor, dataMovimentacao, Tipo);	
 		receitas.add(r);
+		movimentacoes.add(r);
 		calcularSaldoAtual();
 	}
 	
 	public void novoDesconto(float valor, LocalDate dataMovimentacao, TiposDescontos Tipo) {
-		Desconto d = new Desconto(getSaldo(), valor, dataMovimentacao, Tipo);	
+		Desconto d = new Desconto(valor, dataMovimentacao, Tipo);	
 		descontos.add(d);
+		movimentacoes.add(d);
 		calcularSaldoAtual();
 	}
 	
-	public void calcularSaldoAtual() {
+	public void setDescontos(ArrayList<Desconto> descontos) {
+		this.descontos = descontos;
+	}
+
+	public void setReceitas(ArrayList<Receita> receitas) {
+		this.receitas = receitas;
+	}
+
+	public ArrayList<Movimentacao> getMovimentacoes() {
+		return movimentacoes;
+	}
+
+	public float calcularSaldoAtual() {
 		float totalReceitas = 0;
 		float totalDescontos = 0;
 		for (int i = 0; i < receitas.size(); i++) {
@@ -73,7 +92,7 @@ public class Conta {
 				totalDescontos += descontos.get(i).getValor();
 			}
 		}
-		saldo =+ totalReceitas - totalDescontos;				
+		return totalReceitas - totalDescontos;					
 	}
 	
 	public float calcularSaldoData(LocalDate data) {
@@ -81,15 +100,23 @@ public class Conta {
 		float totalDescontos = 0;
 		for (int i = 0; i < receitas.size(); i++) {
 			if (!receitas.get(i).getDataMovimentacao().isAfter(data)) {
-				totalReceitas = receitas.get(i).getValor();
+				totalReceitas += receitas.get(i).getValor();
 			}
 		}
-		for (int i = 0; i < descontos.size(); i++) {
-			if (!descontos.get(i).getDataMovimentacao().isAfter(data)) {
-				totalDescontos += descontos.get(i).getValor();
+		for (int p = 0; p < descontos.size(); p++) {
+			if (!descontos.get(p).getDataMovimentacao().isAfter(data)) {
+				totalDescontos += descontos.get(p).getValor();
 			}
 		}
-		return saldo + (totalReceitas - totalDescontos);				
+		return totalReceitas - totalDescontos;				
+	}
+
+	public ArrayList<Desconto> getDescontos() {
+		return descontos;
+	}
+
+	public ArrayList<Receita> getReceitas() {
+		return receitas;
 	}
 	
 }
