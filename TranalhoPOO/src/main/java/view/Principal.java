@@ -8,6 +8,7 @@ import javax.swing.border.EmptyBorder;
 
 import model.Conta;
 import model.Desconto;
+import model.GereciarArquivo;
 import model.Movimentacao;
 import model.Receita;
 import model.TipoReceita;
@@ -50,6 +51,7 @@ public class Principal extends JFrame {
 	JComboBox cbOrdem = new JComboBox();
 	private final JTextField edDataSaldo = new JTextField();
 	private final JButton btnNewButton = new JButton("Editar movimentaçao");
+	private GereciarArquivo ga = new GereciarArquivo();
 	
 
 	/**
@@ -72,6 +74,14 @@ public class Principal extends JFrame {
 	 * Create the frame.
 	 */
 	public Principal() {
+		addWindowListener(new WindowAdapter() {
+		    @Override
+		    public void windowClosing(WindowEvent e) {
+		    	System.out.println("Listener...");
+		    	ga.escreverArquivo(conta.getMovimentacoes());
+		    }
+		});
+		
 		edDataSaldo.setBounds(184, 62, 185, 20);
 		edDataSaldo.setColumns(10);
 		atualizarSaldo();
@@ -176,7 +186,10 @@ public class Principal extends JFrame {
 		btnNewButton.setBounds(315, 129, 159, 23);
 		
 		contentPane.add(btnNewButton);
+		
+		inicializar();
 	}
+	
 	public void atualizarTabela() {
 		modeloTabela.setRowCount(0);
 		for (Movimentacao movimentacao: conta.getMovimentacoes()) {
@@ -283,9 +296,25 @@ public class Principal extends JFrame {
 		atualizarTabela();
 		JOptionPane.showMessageDialog(null, "Movimentação editada!");
 		mv.setVisible(false);
-		mv.limparCampos();
-		
-		
+		mv.limparCampos();	
 	}
+	
+	public void inicializar() {
+		ga.abrirOuCriarArquivo();
+		conta.setMovimentacoes(ga.lerArquivo());
+		ArrayList<Desconto> d = new ArrayList<Desconto>();
+		ArrayList<Receita> r = new ArrayList<Receita>();
+		for (Movimentacao m : conta.getMovimentacoes()) {
+			if (m.getClass() == Receita.class)
+				r.add((Receita) m);
+			else
+				d.add((Desconto)m);
+		}
+		conta.setReceitas(r);
+		conta.setDescontos(d);
+		atualizarSaldo();
+		atualizarTabela();
+	}
+
 	
 }
