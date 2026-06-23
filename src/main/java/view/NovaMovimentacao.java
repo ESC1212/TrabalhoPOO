@@ -66,12 +66,6 @@ public class NovaMovimentacao extends JFrame {
 	 * Create the frame.
 	 */
 	public NovaMovimentacao() {
-		addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosed(WindowEvent e) {
-				
-			}
-		});
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 		pnCadastro = new JPanel();
@@ -85,26 +79,6 @@ public class NovaMovimentacao extends JFrame {
 		
 		cbTipo.setModel(new DefaultComboBoxModel(new String[] {"Receita", "Desconto"}));
 		cbTipo.setSelectedIndex(-1);
-		cbTipo.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				if (cbTipo.getSelectedIndex() == 0){
-					cbCategoria.setEnabled(true);
-					edValor.setEnabled(true);
-					edData.setEnabled(true);
-					cbCategoria.setModel(new DefaultComboBoxModel<TipoReceita>(TipoReceita.values()));
-				} else if (cbTipo.getSelectedIndex() == 1) {
-					cbCategoria.setEnabled(true);
-					edValor.setEnabled(true);
-					edData.setEnabled(true);
-					cbCategoria.setModel(new DefaultComboBoxModel<TiposDescontos>(TiposDescontos.values()));
-				} else {
-					cbCategoria.setEnabled(false);
-					edValor.setEnabled(false);
-					edData.setEnabled(false);
-				}
-				cbCategoria.setSelectedIndex(-1);
-			}
-		});
 		cbTipo.setBounds(132, 38, 163, 22);
 		pnCadastro.add(cbTipo);
 		
@@ -139,20 +113,58 @@ public class NovaMovimentacao extends JFrame {
 		JLabel lbValor = new JLabel("Valor");
 		lbValor.setBounds(43, 133, 46, 14);
 		pnCadastro.add(lbValor);
-		btCadastrar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (modo == 0)
-					p.cadastrarMovimentacao();
-				else 
-					p.editarRegistro();
-			}
-		});
 		
 		btCadastrar.setBounds(132, 169, 163, 23);
 		pnCadastro.add(btCadastrar);
+		
+		//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+		
+		// isso é só para não poder mecher na tela principal em quanto cadastrando/editando um registro
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosed(WindowEvent e) {
+				p.setEnabled(true);
+			}
+			@Override
+			public void windowActivated(WindowEvent arg0) {
+				p.setEnabled(false);
+			}
+		});
+		
+		cbTipo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if (cbTipo.getSelectedIndex() == 0){
+					cbCategoria.setEnabled(true);
+					edValor.setEnabled(true);
+					edData.setEnabled(true);
+					cbCategoria.setModel(new DefaultComboBoxModel<TipoReceita>(TipoReceita.values()));
+				} else if (cbTipo.getSelectedIndex() == 1) {
+					cbCategoria.setEnabled(true);
+					edValor.setEnabled(true);
+					edData.setEnabled(true);
+					cbCategoria.setModel(new DefaultComboBoxModel<TiposDescontos>(TiposDescontos.values()));
+				} else {
+					cbCategoria.setEnabled(false);
+					edValor.setEnabled(false);
+					edData.setEnabled(false);
+				}
+				cbCategoria.setSelectedIndex(-1);
+			}
+		});
+		
+		btCadastrar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (modo == 0) {
+					p.cadastrarMovimentacao();
+				}	
+				else { 
+					p.editarRegistro();
+				}
+			}
+		});
 
 	}
-	
+	//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	public int getTipoInt() {
 		if (cbTipo.getSelectedIndex() == -1) {
 			JOptionPane.showMessageDialog(null, "Selecione um tipo!");
@@ -201,6 +213,11 @@ public class NovaMovimentacao extends JFrame {
 		this.modo = modo;
 	}
 
+	//------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	
+	/**
+	 * limpa todos os campos da tela
+	 */
 	public void limparCampos() {
 		cbTipo.setSelectedIndex(-1);
 		cbCategoria.removeAll();
@@ -208,6 +225,10 @@ public class NovaMovimentacao extends JFrame {
 		edValor.setText(null);
 	}
 	
+	/**
+	 * preenche os campso da tela baseado em uma movimentação dada
+	 * @param m movimentação que vai ser editado
+	 */
 	public void preencherCampos(Movimentacao m) {
 		
 		if (m.getClass() == Receita.class)

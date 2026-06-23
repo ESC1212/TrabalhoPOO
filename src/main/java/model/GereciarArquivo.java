@@ -13,6 +13,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
+import javax.swing.JOptionPane;
+
 public class GereciarArquivo {
 	
 	File arquivo = new File("Arquivos/dados.csv");
@@ -44,7 +46,6 @@ public class GereciarArquivo {
 				s = s + String.valueOf(m.getValor()) + ",";
 				s = s + String.valueOf(m.getDataMovimentacao()) + ",";
 				s = s+String.valueOf(m.getTipo());
-				System.out.println(s);
 				arquivoCSV.println(s);
 			}	
 			arquivoCSV.close();
@@ -77,17 +78,26 @@ public class GereciarArquivo {
 		
 	}
 	
-	public void processaLinha(String linha) {
+	public void processaLinha(String linha) throws IOException {
 		String[] campos = linha.split(",");
-		Float valor = Float.parseFloat(campos[1]);
-		LocalDate data = LocalDate.parse(campos[2]);
+		try {
+			Float valor = Float.parseFloat(campos[1]);
+			LocalDate data = LocalDate.parse(campos[2]);
 			
-		if (campos[0].equals("Receita")) {
-			Receita r = new Receita(valor, data, TipoReceita.valueOf(campos[3]));
-			movimentacoes.add(r);
-		} else {
-			Desconto d = new Desconto(valor, data, TiposDescontos.valueOf(campos[3]));
-			movimentacoes.add(d);
+			if (campos[0].equals("Receita")) {
+				Receita r = new Receita(valor, data, TipoReceita.valueOf(campos[3]));
+				movimentacoes.add(r);
+			} else {
+				Desconto d = new Desconto(valor, data, TiposDescontos.valueOf(campos[3]));
+				movimentacoes.add(d);
+			}
+		} catch (ArrayIndexOutOfBoundsException e) {
+			// Caso o arquivo esteja cheio de merda
+			JOptionPane.showMessageDialog(null, "Arquivo corrompido\nCriando novo arquivo...");
+			arquivo.delete();
+			arquivo.createNewFile();
+			
 		}
+		
 	}
 }

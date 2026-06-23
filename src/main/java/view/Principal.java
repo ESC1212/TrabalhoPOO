@@ -47,11 +47,12 @@ public class Principal extends JFrame {
 	private NovaMovimentacao mv = new NovaMovimentacao(this);
 	DateTimeFormatter formtData = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 	private final JTextField edSaldo = new JTextField();
-	private final JButton btOrdenar = new JButton("Ordenar");
+	private final JButton btOrdenar = new JButton("Ordenar tabela");
 	JComboBox cbOrdem = new JComboBox();
 	private final JTextField edDataSaldo = new JTextField();
-	private final JButton btnNewButton = new JButton("Editar movimentaçao");
+	private final JButton btEditar = new JButton("Editar movimentaçao");
 	private GereciarArquivo ga = new GereciarArquivo();
+	JComboBox cbFiltrar = new JComboBox();
 	
 
 	/**
@@ -74,22 +75,14 @@ public class Principal extends JFrame {
 	 * Create the frame.
 	 */
 	public Principal() {
-		addWindowListener(new WindowAdapter() {
-		    @Override
-		    public void windowClosing(WindowEvent e) {
-		    	System.out.println("Listener...");
-		    	ga.escreverArquivo(conta.getMovimentacoes());
-		    }
-		});
-		
-		edDataSaldo.setBounds(184, 62, 185, 20);
+		edDataSaldo.setBounds(188, 46, 159, 20);
 		edDataSaldo.setColumns(10);
 		atualizarSaldo();
 		edSaldo.setEditable(false);
-		edSaldo.setBounds(49, 8, 415, 20);
+		edSaldo.setBounds(54, 8, 462, 20);
 		edSaldo.setColumns(10);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 490, 392);
+		setBounds(100, 100, 542, 408);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -100,47 +93,91 @@ public class Principal extends JFrame {
 		
 		JButton btNovaMovimentacao = new JButton("Cadastrar movimentação");
 		btNovaMovimentacao.setFont(new Font("Tahoma", Font.PLAIN, 11));
-		btNovaMovimentacao.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				mv.limparCampos();
-				mv.setModo(0);
-				mv.setVisible(true);
-				mv.getCbTipo().setEnabled(true);
-			}
-		});
-		btNovaMovimentacao.setBounds(0, 129, 159, 23);
+		btNovaMovimentacao.setBounds(10, 145, 159, 23);
 		contentPane.add(btNovaMovimentacao);
 		
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(0, 163, 474, 190);
+		scrollPane.setBounds(10, 179, 506, 179);
 		contentPane.add(scrollPane);
 		scrollPane.setViewportView(table);
 		table.setModel(modeloTabela = new DefaultTableModel(
 			new Object[][] {
 			},
 			new String[] {
-					"Tipo", "Categoria", "Valor", "Data"
+					"Tipo", "Categoria", "Valor", "Data", "Saldo"
 			}
 		));
 		
 		contentPane.add(edSaldo);
 		btOrdenar.setFont(new Font("Tahoma", Font.PLAIN, 11));
-		btOrdenar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				organizarTabela(cbOrdem.getSelectedIndex());				
-			}
-		});
-		btOrdenar.setBounds(10, 95, 149, 23);
+		btOrdenar.setBounds(10, 77, 159, 23);
 		
 		contentPane.add(btOrdenar);
 		
 		cbOrdem.setModel(new DefaultComboBoxModel(new String[] {"Data", "Valor", "Tipo"}));
-		cbOrdem.setBounds(184, 95, 185, 22);
+		cbOrdem.setBounds(188, 77, 159, 22);
 		contentPane.add(cbOrdem);
 		cbOrdem.setSelectedItem(-1);
 		
-		JButton btSaldoData = new JButton("Consultar saldo em data");
+		JButton btSaldoData = new JButton("Consultar saldo por data");
 		btSaldoData.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		btSaldoData.setBounds(10, 43, 159, 23);
+		contentPane.add(btSaldoData);
+		
+		contentPane.add(edDataSaldo);
+		
+		JButton btDeletar = new JButton("Deletar movimentação");
+		btDeletar.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		btDeletar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				deletarRegistro();
+			}
+		});
+		btDeletar.setBounds(188, 145, 159, 23);
+		contentPane.add(btDeletar);
+		btEditar.setFont(new Font("Tahoma", Font.PLAIN, 11));
+		btEditar.setBounds(357, 145, 159, 23);
+		contentPane.add(btEditar);
+		
+		JButton btFiltrar = new JButton("Filtrar por");
+		btFiltrar.setBounds(10, 111, 159, 23);
+		contentPane.add(btFiltrar);
+		
+		cbFiltrar.setModel(new DefaultComboBoxModel(new String[] {"Nenhum", "Receita", "Desconto"}));
+		cbFiltrar.setBounds(188, 110, 159, 22);
+		contentPane.add(cbFiltrar);
+		
+		//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+		
+		addWindowListener(new WindowAdapter() {
+		    @Override
+		    public void windowClosing(WindowEvent e) {
+		    	cbFiltrar.setSelectedIndex(0);
+		    	filtrarTabela();
+		    	ga.escreverArquivo(conta.getMovimentacoes());
+		    }
+		});
+		
+		btFiltrar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				filtrarTabela();
+			}
+		});
+		
+		btEditar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if (table.getSelectedRow() != -1) {
+					mv.preencherCampos(conta.getMovimentacoes().get(table.getSelectedRow()));
+					mv.setVisible(true);
+					mv.getCbTipo().setEnabled(false);
+					mv.setModo(1);
+				} else {
+					JOptionPane.showMessageDialog(null, "Selecione um registro!");
+				}
+				
+			}
+		});
+		
 		btSaldoData.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				if (edDataSaldo.getText().isEmpty()) {
@@ -154,42 +191,33 @@ public class Principal extends JFrame {
 				}
 			}
 		});
-		btSaldoData.setBounds(10, 61, 149, 23);
-		contentPane.add(btSaldoData);
 		
-		contentPane.add(edDataSaldo);
-		
-		JButton btDeletar = new JButton("Deletar movimentação");
-		btDeletar.setFont(new Font("Tahoma", Font.PLAIN, 11));
-		btDeletar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				deletarRegistro();
+		btOrdenar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				organizarTabela(cbOrdem.getSelectedIndex());				
 			}
 		});
-		// ----------------------------------------------------------------------------------------------------------------------------------------------------------------
-		btDeletar.setBounds(157, 129, 159, 23);
-		contentPane.add(btDeletar);
-		btnNewButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				if (table.getSelectedRow() != -1) {
-					mv.preencherCampos(conta.getMovimentacoes().get(table.getSelectedRow()));
-					mv.setVisible(true);
-					mv.getCbTipo().setEnabled(false);
-					mv.setModo(1);
-				} else {
-					JOptionPane.showMessageDialog(null, "Selecione um registro!");
-				}
-				
+		
+		btNovaMovimentacao.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				mv.limparCampos();
+				mv.setModo(0);
+				mv.setVisible(true);
+				mv.getCbTipo().setEnabled(true);
 			}
 		});
-		btnNewButton.setFont(new Font("Tahoma", Font.PLAIN, 11));
-		btnNewButton.setBounds(315, 129, 159, 23);
 		
-		contentPane.add(btnNewButton);
+		
 		
 		inicializar();
 	}
 	
+	//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	/**
+	 * Atualiza a tabela na tela principal 
+	 * <br>
+	 * este metodo é chamado quando um novo registro é adicionado
+	 */
 	public void atualizarTabela() {
 		modeloTabela.setRowCount(0);
 		for (Movimentacao movimentacao: conta.getMovimentacoes()) {
@@ -203,10 +231,17 @@ public class Principal extends JFrame {
 				tipo,
 				movimentacao.getTipo(),
 				movimentacao.getValor(),
-				movimentacao.getDataMovimentacao().format(formtData)
+				movimentacao.getDataMovimentacao().format(formtData),
+				conta.calcularSaldoData(movimentacao.getDataMovimentacao())
 			});
 		}
+		
 	}
+	/**
+	 * Cadastra uma nova movimentação no ArrayList de receita, ou o de desconto, dependendo do tipo selecionado
+	 * <br>
+	 * Este metodo é chamado toda fez que o botão de "Cadastrar" é precionado
+	 */
 	public void cadastrarMovimentacao() {
 		
 		if (mv.getTipoInt() == -1 || mv.getCbCategoria().getSelectedIndex() == -1 || mv.getEdData() == null || mv.getEdValor() <= 0)
@@ -218,16 +253,23 @@ public class Principal extends JFrame {
 			conta.novoDesconto(Float.valueOf(mv.getEdValor()), mv.getEdData(), (TiposDescontos) mv.getCbCategoria().getSelectedItem());
 		}
 		edSaldo.setText(String.valueOf(conta.calcularSaldoAtual()));
-		atualizarTabela();
+		filtrarTabela();
 		JOptionPane.showMessageDialog(null, "Movimentação cadastrada!");
+		this.setEnabled(true);
 		mv.setVisible(false);
 		mv.limparCampos();
 	}
-
+	/**
+	 * Atualiza o campo saldo na tela principal baseado na data atual
+	 */
 	public void atualizarSaldo() {
-		edSaldo.setText(String.valueOf(conta.getSaldo() + conta.calcularSaldoAtual()));
+		conta.calcularSaldoAtual();
+		edSaldo.setText(String.valueOf(conta.getSaldo()));
 	}
-	
+	/**
+	 * Organiza a tabela na tela principal baseado no tipo de organização
+	 * @param Tipo Tipo de organização que vai ser utilizado para ordenar a tabela
+	 */
 	public void organizarTabela(int Tipo){
 		ArrayList<Movimentacao> movimentacoes = conta.getMovimentacoes();
 		switch(Tipo) {
@@ -247,12 +289,18 @@ public class Principal extends JFrame {
 		conta.setMovimentacoes(movimentacoes);
 		atualizarTabela();
 	}
-	
+	/**
+	 * Deleta o registro atualmente selecionado na tabela
+	 * <br>
+	 * Caso nenhum registro for selecionado, nada acontece
+	 */
 	public void deletarRegistro() {
 		int selecionado = table.getSelectedRow();
 		
-		if (selecionado == -1) 
+		if (selecionado == -1) {
+			JOptionPane.showMessageDialog(this, "Nenhum registro selecionado!");
 			return;
+		}
 
 		ArrayList<Movimentacao> m = conta.getMovimentacoes();
 		ArrayList<Receita> R = conta.getReceitas();
@@ -271,7 +319,11 @@ public class Principal extends JFrame {
 		modeloTabela.removeRow(selecionado);
 		atualizarTabela();
 	}
-	
+	/**
+	 * Edita o registro atualmente selecinado na tabela quando clicar no botão "Editar" na tela de Edição de registro
+	 * <br>
+	 * Caso nenhum registro estiver selecionado, este metodo não será chamado
+	 */
 	public void editarRegistro() {
 		int selecionado = table.getSelectedRow();
 		
@@ -294,11 +346,44 @@ public class Principal extends JFrame {
 		
 		edSaldo.setText(String.valueOf(conta.calcularSaldoAtual()));
 		atualizarTabela();
+		filtrarTabela();
 		JOptionPane.showMessageDialog(null, "Movimentação editada!");
+		this.setEnabled(true);
 		mv.setVisible(false);
 		mv.limparCampos();	
 	}
-	
+	/**
+	 * Filtra a tabela por receita ou desconto
+	 */
+	public void filtrarTabela() {
+		ArrayList<Movimentacao> mov = new ArrayList<Movimentacao>();
+		switch(cbFiltrar.getSelectedIndex()) {
+		case 0:
+			mov.addAll(conta.getReceitas());
+			mov.addAll(conta.getDescontos());
+			conta.setMovimentacoes(mov);
+			organizarTabela(0);
+			cbOrdem.setSelectedIndex(0);
+			break;
+		case 1:
+			mov.addAll(conta.getReceitas());
+			conta.setMovimentacoes(mov);
+			conta.setMovimentacoes(mov);
+			organizarTabela(0);
+			cbOrdem.setSelectedIndex(0);
+			break;
+		case 2:
+			mov.addAll(conta.getDescontos());
+			conta.setMovimentacoes(mov);
+			conta.setMovimentacoes(mov);
+			organizarTabela(0);
+			cbOrdem.setSelectedIndex(0);
+			break;
+		}
+	}
+	/**
+	 * Inicializa a tela, setando o saldo, e atualizando a tabela
+	 */
 	public void inicializar() {
 		ga.abrirOuCriarArquivo();
 		conta.setMovimentacoes(ga.lerArquivo());
@@ -315,6 +400,4 @@ public class Principal extends JFrame {
 		atualizarSaldo();
 		atualizarTabela();
 	}
-
-	
 }

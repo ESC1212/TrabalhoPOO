@@ -13,8 +13,6 @@ import model.TiposDescontos;
 public class App 
 {
     public static void main( String[] args )
-    {
-    	
-    	
+    {	
     }
 }
