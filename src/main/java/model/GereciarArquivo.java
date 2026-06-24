@@ -21,6 +21,9 @@ public class GereciarArquivo {
 	ArrayList<Movimentacao> movimentacoes = new ArrayList();
 	DateTimeFormatter formtData = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 	
+	/**
+	 * Abri o arquivo caso ele exista, caso não exista, cria um novo
+	 */
 	public void abrirOuCriarArquivo() {
 		if (!arquivo.exists()) {
 			try {
@@ -32,6 +35,10 @@ public class GereciarArquivo {
 		}
 	}
 	
+	/**
+	 * Grava os dados do programa no arquivo
+	 * @param mov lista de movimentações para gravar
+	 */
 	public void escreverArquivo(ArrayList<Movimentacao> mov) {
 		try {
 			FileOutputStream fos = new FileOutputStream(arquivo);
@@ -54,7 +61,10 @@ public class GereciarArquivo {
 			e.printStackTrace();
 		}
 	}
-
+	/**
+	 * le o arquivo .csv para obter as informações das movimentações
+	 * @return lista de movimentações
+	 */
 	public ArrayList<Movimentacao> lerArquivo() {
 		FileReader reader;
 		try {
@@ -77,7 +87,11 @@ public class GereciarArquivo {
 		return null;
 		
 	}
-	
+	/**
+	 * Transforma uma string em um objeto Desconto ou Receita e adiciona ele a lista de movimentações
+	 * @param linha linha a ser processada
+	 * @throws IOException
+	 */
 	public void processaLinha(String linha) throws IOException {
 		String[] campos = linha.split(",");
 		try {
@@ -85,10 +99,10 @@ public class GereciarArquivo {
 			LocalDate data = LocalDate.parse(campos[2]);
 			
 			if (campos[0].equals("Receita")) {
-				Receita r = new Receita(valor, data, TipoReceita.valueOf(campos[3]));
+				Receita r = new Receita(valor, data, CategoriaReceita.valueOf(campos[3]));
 				movimentacoes.add(r);
 			} else {
-				Desconto d = new Desconto(valor, data, TiposDescontos.valueOf(campos[3]));
+				Desconto d = new Desconto(valor, data, CategoriaDesconto.valueOf(campos[3]));
 				movimentacoes.add(d);
 			}
 		} catch (ArrayIndexOutOfBoundsException e) {

@@ -5,9 +5,9 @@ import java.util.Objects;
 
 public class Receita extends Movimentacao{
 	
-	private TipoReceita Tipo;
+	private CategoriaReceita Tipo;
 	
-	public Receita (float valor, LocalDate dataMovimentacao, TipoReceita Tipo) {
+	public Receita (float valor, LocalDate dataMovimentacao, CategoriaReceita Tipo) {
 		super(valor, dataMovimentacao);
 		setTipo(Tipo);
 	}
@@ -21,11 +21,11 @@ public class Receita extends Movimentacao{
 	}
 
 	@Override
-	public TipoReceita getTipo() {
+	public CategoriaReceita getTipo() {
 		return Tipo;
 	}
 
-	public void setTipo(TipoReceita tipo) {
+	public void setTipo(CategoriaReceita tipo) {
 		if (tipo == null)
 			throw new IllegalArgumentException("Tipo inválido!");
 		Tipo = tipo;

@@ -1,5 +1,5 @@
 package model;
 
-public enum TiposDescontos {
+public enum CategoriaDesconto {
 	ALIMENTACAO, TRANSPORTE, RESIDENCIA, EDUCACAO, ENTRETENIMENTO, OUTROS
 }

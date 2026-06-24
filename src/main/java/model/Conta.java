@@ -5,41 +5,19 @@ import java.util.ArrayList;
 
 public class Conta {
 	
-	private String nomeTitulas;
-	private int numeroConta;
 	private float saldo;
 	private ArrayList<Desconto> descontos = new ArrayList<Desconto>();
 	private ArrayList<Receita> receitas = new ArrayList<Receita>();
 	private ArrayList<Movimentacao> movimentacoes = new ArrayList();
 
-	public Conta(String nomeTitutal, int numeroConta, float saldo) {
-		setNomeTitulas(nomeTitutal);
-		setNumeroConta(numeroConta);
-		setSaldo(saldo);
-	}
-
-	public String getNomeTitulas() {
-		return nomeTitulas;
+	public Conta() {
+		setSaldo(0);
 	}
 
 	public void setMovimentacoes(ArrayList<Movimentacao> movimentacoes) {
+		if (movimentacoes == null)
+			throw new IllegalArgumentException("Lista vazia!");
 		this.movimentacoes = movimentacoes;
-	}
-	
-	public void setNomeTitulas(String nomeTitulas) {
-		if (nomeTitulas.isEmpty())
-			throw new IllegalArgumentException("Nome inválido!");
-		this.nomeTitulas = nomeTitulas;
-	}
-
-	public int getNumeroConta() {
-		return numeroConta;
-	}
-
-	public void setNumeroConta(int numeroConta) {
-		if (numeroConta <= 0)
-			throw new IllegalArgumentException("Numero conta inválido");
-		this.numeroConta = numeroConta;
 	}
 
 	public float getSaldo() {
@@ -51,10 +29,14 @@ public class Conta {
 	}
 	
 	public void setDescontos(ArrayList<Desconto> descontos) {
+		if (descontos == null)
+			throw new IllegalArgumentException("Lista vazia!");
 		this.descontos = descontos;
 	}
 
 	public void setReceitas(ArrayList<Receita> receitas) {
+		if (receitas == null)
+			throw new IllegalArgumentException("Lista vazia!");
 		this.receitas = receitas;
 	}
 
@@ -76,7 +58,7 @@ public class Conta {
 	 * @param dataMovimentacao data da receita
 	 * @param Tipo categoria da receita 
 	 */
-	public void novaReceita(float valor, LocalDate dataMovimentacao, TipoReceita Tipo) {
+	public void novaReceita(float valor, LocalDate dataMovimentacao, CategoriaReceita Tipo) {
 		if (!dataMovimentacao.isAfter(LocalDate.now()))
 			setSaldo(saldo + valor);
 		Receita r = new Receita(valor, dataMovimentacao, Tipo);	
@@ -90,13 +72,16 @@ public class Conta {
 	 * @param dataMovimentacao data do desconto
 	 * @param Tipo categoria do desconto
 	 */
-	public void novoDesconto(float valor, LocalDate dataMovimentacao, TiposDescontos Tipo) {
+	public void novoDesconto(float valor, LocalDate dataMovimentacao, CategoriaDesconto Tipo) {
 		Desconto d = new Desconto(valor, dataMovimentacao, Tipo);	
 		descontos.add(d);
 		movimentacoes.add(d);
 		calcularSaldoAtual();
 	}
-
+	/**
+	 * Calcula o saldo baseado na data atual
+	 * @return saldo atual
+	 */
 	public float calcularSaldoAtual() {
 		float totalReceitas = 0;
 		float totalDescontos = 0;
@@ -113,7 +98,11 @@ public class Conta {
 		saldo = totalReceitas - totalDescontos;
 		return saldo;					
 	}
-	
+	/**
+	 * Calcula o saldo baseado em uma data informada
+	 * @param data data para o salculo do saldo
+	 * @return o saldo calculado para a data informada
+	 */
 	public float calcularSaldoData(LocalDate data) {
 		float totalReceitas = 0;
 		float totalDescontos = 0;

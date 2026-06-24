@@ -1,5 +1,5 @@
 package model;
 
-public enum TipoReceita {
+public enum CategoriaReceita {
 	SALARIO, DECIMOTERCEIRO, FERIAS, OUTROS
 }

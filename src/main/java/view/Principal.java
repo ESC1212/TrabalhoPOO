@@ -11,8 +11,8 @@ import model.Desconto;
 import model.GereciarArquivo;
 import model.Movimentacao;
 import model.Receita;
-import model.TipoReceita;
-import model.TiposDescontos;
+import model.CategoriaReceita;
+import model.CategoriaDesconto;
 
 import javax.swing.JLabel;
 import java.awt.event.WindowAdapter;
@@ -43,7 +43,7 @@ public class Principal extends JFrame {
 	JLabel lbSaldo = new JLabel("Saldo: ");
 	private JTable table = new JTable();
 	private DefaultTableModel modeloTabela;
-	Conta conta = new Conta("Eduardo", 123123, 0);
+	Conta conta = new Conta();
 	private NovaMovimentacao mv = new NovaMovimentacao(this);
 	DateTimeFormatter formtData = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 	private final JTextField edSaldo = new JTextField();
@@ -207,8 +207,6 @@ public class Principal extends JFrame {
 			}
 		});
 		
-		
-		
 		inicializar();
 	}
 	
@@ -248,9 +246,9 @@ public class Principal extends JFrame {
 			return;
 		
 		if(mv.getTipoInt() == 0) {
-			conta.novaReceita(Float.valueOf(mv.getEdValor()), mv.getEdData(), (TipoReceita) mv.getCbCategoria().getSelectedItem());
+			conta.novaReceita(Float.valueOf(mv.getEdValor()), mv.getEdData(), (CategoriaReceita) mv.getCbCategoria().getSelectedItem());
 		} else if(mv.getTipoInt() == 1) {
-			conta.novoDesconto(Float.valueOf(mv.getEdValor()), mv.getEdData(), (TiposDescontos) mv.getCbCategoria().getSelectedItem());
+			conta.novoDesconto(Float.valueOf(mv.getEdValor()), mv.getEdData(), (CategoriaDesconto) mv.getCbCategoria().getSelectedItem());
 		}
 		edSaldo.setText(String.valueOf(conta.calcularSaldoAtual()));
 		filtrarTabela();
@@ -340,9 +338,9 @@ public class Principal extends JFrame {
 		mov.get(selecionado).setDataMovimentacao(mv.getEdData());
 		
 		if (mov.get(selecionado).getClass() == Receita.class)
-			((Receita) mov.get(selecionado)).setTipo((TipoReceita) mv.cbCategoria.getSelectedItem());
+			((Receita) mov.get(selecionado)).setTipo((CategoriaReceita) mv.cbCategoria.getSelectedItem());
 		else
-			((Desconto) mov.get(selecionado)).setTipo((TiposDescontos) mv.cbCategoria.getSelectedItem());
+			((Desconto) mov.get(selecionado)).setTipo((CategoriaDesconto) mv.cbCategoria.getSelectedItem());
 		
 		edSaldo.setText(String.valueOf(conta.calcularSaldoAtual()));
 		atualizarTabela();

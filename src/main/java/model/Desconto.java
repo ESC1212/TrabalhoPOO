@@ -5,19 +5,19 @@ import java.util.Objects;
 
 public class Desconto extends Movimentacao{
 
-	private TiposDescontos Tipo;
+	private CategoriaDesconto Tipo;
 	
-	public Desconto (float valor, LocalDate dataMovimentacao, TiposDescontos Tipo) {
+	public Desconto (float valor, LocalDate dataMovimentacao, CategoriaDesconto Tipo) {
 		super(valor, dataMovimentacao);
 		setTipo(Tipo);
 	}
 
 	@Override
-	public TiposDescontos getTipo() {
+	public CategoriaDesconto getTipo() {
 		return Tipo;
 	}
 
-	public void setTipo(TiposDescontos tipo) {
+	public void setTipo(CategoriaDesconto tipo) {
 		if (tipo == null)
 			throw new IllegalArgumentException("Tipo inválido!");
 		Tipo = tipo;

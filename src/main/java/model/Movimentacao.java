@@ -17,7 +17,7 @@ public abstract class Movimentacao {
 		return valor;
 	}
 	public void setValor(float valor) {
-		if (valor < 0)
+		if (valor <= 0)
 			throw new IllegalArgumentException("Valor inválido");
 		this.valor = valor;
 	}
@@ -25,6 +25,8 @@ public abstract class Movimentacao {
 		return dataMovimentacao;
 	}
 	public void setDataMovimentacao(LocalDate dataMovimentacao) {
+		if (dataMovimentacao == null)
+			throw new IllegalArgumentException("Data inválida!");
 		this.dataMovimentacao = dataMovimentacao;
 	}
 

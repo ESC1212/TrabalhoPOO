@@ -8,8 +8,8 @@ import javax.swing.border.EmptyBorder;
 
 import model.Movimentacao;
 import model.Receita;
-import model.TipoReceita;
-import model.TiposDescontos;
+import model.CategoriaReceita;
+import model.CategoriaDesconto;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -137,12 +137,12 @@ public class NovaMovimentacao extends JFrame {
 					cbCategoria.setEnabled(true);
 					edValor.setEnabled(true);
 					edData.setEnabled(true);
-					cbCategoria.setModel(new DefaultComboBoxModel<TipoReceita>(TipoReceita.values()));
+					cbCategoria.setModel(new DefaultComboBoxModel<CategoriaReceita>(CategoriaReceita.values()));
 				} else if (cbTipo.getSelectedIndex() == 1) {
 					cbCategoria.setEnabled(true);
 					edValor.setEnabled(true);
 					edData.setEnabled(true);
-					cbCategoria.setModel(new DefaultComboBoxModel<TiposDescontos>(TiposDescontos.values()));
+					cbCategoria.setModel(new DefaultComboBoxModel<CategoriaDesconto>(CategoriaDesconto.values()));
 				} else {
 					cbCategoria.setEnabled(false);
 					edValor.setEnabled(false);
