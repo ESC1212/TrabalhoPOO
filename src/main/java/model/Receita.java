@@ -13,14 +13,6 @@ public class Receita extends Movimentacao{
 	}
 
 	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + Objects.hash(Tipo);
-		return result;
-	}
-
-	@Override
 	public CategoriaReceita getTipo() {
 		return Tipo;
 	}

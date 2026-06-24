@@ -32,10 +32,6 @@ public abstract class Movimentacao {
 
 	public abstract Object getTipo();
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(dataMovimentacao, valor);
-	}
 
 	@Override
 	public boolean equals(Object obj) {
